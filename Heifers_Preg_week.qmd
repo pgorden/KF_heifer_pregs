@@ -1,0 +1,64 @@
+---
+title: "KF_Heifers_Preg"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+
+pacman::p_load(
+  readxl,        #read excel files
+  readr,         #read csv files
+  openxlsx,      #opens worksheets
+  rio,           # import/export
+  here,          # filepaths
+  janitor,       # tables
+  tidyverse,     # data mgmt and viz
+  zoo,           # dates
+  lubridate,     #parse dates
+  #broom,         # model output
+  #scales,        # for tables %
+  gt,              # create tables
+  #gtsummmary,   #tables
+  #rstatix,
+  #meantables,
+  knitr,         # tables
+  #epiR,          # Sens/Spec
+  skimr,          # quick summaries     
+  writexl, 
+  ggpubr         #insert tables to ggplot
+)
+
+```
+
+```{r}
+#| label: load data
+#| include: false
+
+num_preg <- read_csv("Pen_105_preg.csv", col_types = cols(.default = ("c"))) |>
+    mutate(id   = as.numeric(ID),
+           due  = lubridate::mdy(DUE),
+           dcc  = as.numeric(DCC)) |>
+    select(id:dcc)
+
+View(num_preg)
+```
+
+```{r}
+#| label: Create month fresh
+#| include: false
+
+freshbymonth <- freshlctgp |>
+                mutate(monfrsh = case_when(
+                            fdat  >=  lubridate::ymd("2024-07-01") & fdat <=           lubridate::ymd("2024-07-31") ~ "Jul",
+                            fdat  >=  lubridate::ymd("2024-08-01") & fdat <=           lubridate::ymd("2024-08-31") ~ "Aug",
+                            fdat  >=  lubridate::ymd("2024-09-01") & fdat <=           lubridate::ymd("2024-09-30") ~ "Sep",
+                            TRUE ~ NA_character_)) |>
+                mutate(ddry2 = case_when(
+                            lact == 1 ~ 25,
+                            lact >  1 ~ ddry,
+                            TRUE ~ NA_real_))
+
+View(freshbymonth)
+```
